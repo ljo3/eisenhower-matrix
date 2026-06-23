@@ -341,10 +341,18 @@
 <script>
   document.getElementById('date-label').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
+  function getStoredTheme() {
+    try { return localStorage.getItem('theme'); } catch (e) { return null; }
+  }
+
+  function setStoredTheme(theme) {
+    try { localStorage.setItem('theme', theme); } catch (e) { /* storage blocked (e.g. sandboxed embed) */ }
+  }
+
   function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     document.getElementById('theme-icon').className = theme === 'dark' ? 'ti ti-sun' : 'ti ti-moon';
-    localStorage.setItem('theme', theme);
+    setStoredTheme(theme);
   }
 
   function toggleTheme() {
@@ -353,8 +361,9 @@
   }
 
   (function initTheme() {
-    const saved = localStorage.getItem('theme');
-    const preferred = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    const saved = getStoredTheme();
+    let preferred = 'light';
+    try { preferred = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; } catch (e) {}
     applyTheme(saved || preferred);
   })();
 
