@@ -8,27 +8,78 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  :root {
+    --bg: #f9f8f6;
+    --text: #1a1a1a;
+    --subtitle: #888;
+    --border: #d0cec8;
+    --hover-bg: #f0ede8;
+    --axis-label: #aaa;
+    --task-border: #ddd;
+    --task-border-focus: #aaa;
+    --placeholder: #bbb;
+    --add-btn: #aaa;
+    --add-btn-hover: #666;
+    --date-color: #bbb;
+  }
+
+  [data-theme="dark"] {
+    --bg: #18181a;
+    --text: #eee;
+    --subtitle: #999;
+    --border: #3a3a3c;
+    --hover-bg: #28282a;
+    --axis-label: #777;
+    --task-border: #3a3a3c;
+    --task-border-focus: #666;
+    --placeholder: #555;
+    --add-btn: #777;
+    --add-btn-hover: #bbb;
+    --date-color: #555;
+  }
+
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: #f9f8f6;
+    background: var(--bg);
     min-height: 100vh;
     padding: 24px 16px;
-    color: #1a1a1a;
+    color: var(--text);
+    transition: background 0.2s, color 0.2s;
   }
 
   h1 {
     font-size: 17px;
     font-weight: 500;
-    color: #1a1a1a;
+    color: var(--text);
     margin-bottom: 4px;
     letter-spacing: -0.01em;
   }
 
   .subtitle {
     font-size: 12px;
-    color: #888;
+    color: var(--subtitle);
     margin-bottom: 20px;
   }
+
+  .theme-toggle-btn {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 0.5px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: background 0.15s;
+    z-index: 10;
+  }
+  .theme-toggle-btn:hover { background: var(--hover-bg); }
 
   .header-row {
     display: flex;
@@ -39,16 +90,16 @@
 
   .reset-btn {
     background: none;
-    border: 0.5px solid #d0cec8;
+    border: 0.5px solid var(--border);
     border-radius: 8px;
     font-size: 12px;
-    color: #888;
+    color: var(--subtitle);
     cursor: pointer;
     padding: 5px 14px;
     font-family: inherit;
     transition: background 0.15s;
   }
-  .reset-btn:hover { background: #f0ede8; }
+  .reset-btn:hover { background: var(--hover-bg); }
   .reset-btn.confirming { border-color: #e05252; color: #a02020; background: #fdf0f0; }
   .reset-btn.confirming:hover { background: #fce0e0; }
 
@@ -62,7 +113,7 @@
     writing-mode: vertical-rl;
     transform: rotate(180deg);
     font-size: 10px;
-    color: #aaa;
+    color: var(--axis-label);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     text-align: center;
@@ -82,7 +133,7 @@
 
   .x-label {
     font-size: 10px;
-    color: #aaa;
+    color: var(--axis-label);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     text-align: center;
@@ -109,6 +160,11 @@
   .q-delegate { background: #fdf4e4; border-color: #f5cf87; --accent: #c07c10; }
   .q-eliminate{ background: #f3f2ee; border-color: #d5d3cc; --accent: #888; }
 
+  [data-theme="dark"] .q-do       { background: #3a2222; border-color: #5a2c2c; }
+  [data-theme="dark"] .q-schedule { background: #233222; border-color: #3a5530; }
+  [data-theme="dark"] .q-delegate { background: #352c1c; border-color: #5a4a26; }
+  [data-theme="dark"] .q-eliminate{ background: #2a2a29; border-color: #45433f; }
+
   .q-header { display: flex; align-items: center; gap: 10px; }
 
   .q-icon {
@@ -134,6 +190,11 @@
   .q-delegate .q-title { color: #7a4d08; }
   .q-eliminate .q-title{ color: #555; }
 
+  [data-theme="dark"] .q-do .q-title       { color: #f29a9a; }
+  [data-theme="dark"] .q-schedule .q-title { color: #a8d97a; }
+  [data-theme="dark"] .q-delegate .q-title { color: #e0b35c; }
+  [data-theme="dark"] .q-eliminate .q-title{ color: #ccc; }
+
   .q-sub {
     font-size: 11px;
     opacity: 0.7;
@@ -142,6 +203,11 @@
   .q-schedule .q-sub { color: #3b6d11; }
   .q-delegate .q-sub { color: #7a4d08; }
   .q-eliminate .q-sub{ color: #555; }
+
+  [data-theme="dark"] .q-do .q-sub       { color: #f29a9a; }
+  [data-theme="dark"] .q-schedule .q-sub { color: #a8d97a; }
+  [data-theme="dark"] .q-delegate .q-sub { color: #e0b35c; }
+  [data-theme="dark"] .q-eliminate .q-sub{ color: #ccc; }
 
   .task-list { display: flex; flex-direction: column; gap: 5px; flex: 1; }
 
@@ -158,23 +224,23 @@
     flex: 1;
     background: transparent;
     border: none;
-    border-bottom: 0.5px solid #ddd;
+    border-bottom: 0.5px solid var(--task-border);
     font-size: 13px;
-    color: #1a1a1a;
+    color: var(--text);
     padding: 3px 0;
     outline: none;
     font-family: inherit;
     transition: border-color 0.15s;
   }
-  .task-input::placeholder { color: #bbb; }
-  .task-input:focus { border-bottom-color: #aaa; }
-  .task-input.done { text-decoration: line-through; color: #bbb; }
+  .task-input::placeholder { color: var(--placeholder); }
+  .task-input:focus { border-bottom-color: var(--task-border-focus); }
+  .task-input.done { text-decoration: line-through; color: var(--placeholder); }
 
   .add-btn {
     background: none;
     border: none;
     font-size: 11px;
-    color: #aaa;
+    color: var(--add-btn);
     cursor: pointer;
     padding: 2px 0;
     text-align: left;
@@ -184,17 +250,21 @@
     font-family: inherit;
     transition: color 0.15s;
   }
-  .add-btn:hover { color: #666; }
+  .add-btn:hover { color: var(--add-btn-hover); }
 
   .date-row {
     font-size: 11px;
-    color: #bbb;
+    color: var(--date-color);
     text-align: right;
     margin-top: 4px;
   }
 </style>
 </head>
 <body>
+
+<button class="theme-toggle-btn" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+  <i class="ti ti-moon" id="theme-icon"></i>
+</button>
 
 <div class="header-row">
   <div>
@@ -270,6 +340,32 @@
 
 <script>
   document.getElementById('date-label').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+  function getStoredTheme() {
+    try { return localStorage.getItem('theme'); } catch (e) { return null; }
+  }
+
+  function setStoredTheme(theme) {
+    try { localStorage.setItem('theme', theme); } catch (e) { /* storage blocked (e.g. sandboxed embed) */ }
+  }
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    document.getElementById('theme-icon').className = theme === 'dark' ? 'ti ti-sun' : 'ti ti-moon';
+    setStoredTheme(theme);
+  }
+
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme');
+    applyTheme(current === 'dark' ? 'light' : 'dark');
+  }
+
+  (function initTheme() {
+    const saved = getStoredTheme();
+    let preferred = 'light';
+    try { preferred = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; } catch (e) {}
+    applyTheme(saved || preferred);
+  })();
 
   function addTask(q, value) {
     const list = document.getElementById('list-' + q);
