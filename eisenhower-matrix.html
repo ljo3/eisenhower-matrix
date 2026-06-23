@@ -49,6 +49,8 @@
     transition: background 0.15s;
   }
   .reset-btn:hover { background: #f0ede8; }
+  .reset-btn.confirming { border-color: #e05252; color: #a02020; background: #fdf0f0; }
+  .reset-btn.confirming:hover { background: #fce0e0; }
 
   .axis-wrap {
     display: grid;
@@ -199,7 +201,7 @@
     <h1>⚡ Eisenhower Matrix</h1>
     <div class="subtitle">Sort tasks by urgency and importance — reset daily.</div>
   </div>
-  <button class="reset-btn" onclick="resetAll()">Reset all</button>
+  <button class="reset-btn" id="reset-btn" onclick="resetAll()">Reset all</button>
 </div>
 
 <div class="axis-wrap">
@@ -292,11 +294,22 @@
   }
 
   function resetAll() {
-    if (!confirm('Clear all tasks?')) return;
-    ['do','schedule','delegate','eliminate'].forEach(q => {
-      document.getElementById('list-' + q).innerHTML = '';
-      addTask(q);
-    });
+    const btn = document.getElementById('reset-btn');
+    if (btn.classList.contains('confirming')) {
+      ['do','schedule','delegate','eliminate'].forEach(q => {
+        document.getElementById('list-' + q).innerHTML = '';
+        addTask(q);
+      });
+      btn.textContent = 'Reset all';
+      btn.classList.remove('confirming');
+    } else {
+      btn.textContent = 'Tap again to confirm';
+      btn.classList.add('confirming');
+      setTimeout(() => {
+        btn.textContent = 'Reset all';
+        btn.classList.remove('confirming');
+      }, 3000);
+    }
   }
 
   ['do','schedule','delegate','eliminate'].forEach(q => addTask(q));
